@@ -1,0 +1,6 @@
+datasets
+tokenizers
+conllu
+torch
+matplotlib
+tdqm
