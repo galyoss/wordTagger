@@ -107,7 +107,10 @@ def train(model: PosTagger,
         labels = batch["labels"].to(device)
         probs = model(sentences)
         labels_for_loss = translate_label_vector_for_lossfunc(labels.view(-1))
-        loss = loss_fn(probs, labels_for_loss.float())
+        loss_fn_local = torch.nn.CrossEntropyLoss()
+        print('probs_shape:', probs.shape)
+        print('labels_shape:', labels.shape)
+        loss = loss_fn(probs.view(-1,19), labels.view(-1))
 
         ###
 
@@ -126,7 +129,7 @@ def translate_label_vector_for_lossfunc(labels):
     output= []
     for label in labels:
         output.append([1 if i == label else 0 for i in range(tag_tokenizer.get_vocab_size())])
-    return torch.FloatTensor(output).view(-1)
+    return torch.FloatTensor(output)
 
 def evaluate(model: PosTagger,
              dataloader: torch.utils.data.DataLoader) -> dict:
