@@ -111,8 +111,8 @@ def train(model: PosTagger,
         print('probs_shape:', probs.shape)
         print('labels_shape:', labels.shape)
         loss = loss_fn(probs.view(-1,19), labels.view(-1))
-
-        ###
+        loss.backward()
+        optimizer.step()
 
         preds = probs.argmax(dim=2)
 
