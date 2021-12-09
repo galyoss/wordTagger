@@ -87,11 +87,12 @@ class PosTagger(nn.Module):
                             batch_first=True,
                             bidirectional=True)
         self.fc = nn.Linear(hidden_size * 2, tag_tokenizer.get_vocab_size())
+        print(f'linear layer output is {tag_tokenizer.get_vocab_size()}=========')
 
     def forward(self, x) -> torch.Tensor:
         embs = self.embedding(x)
         output, (hidden, cell) = self.lstm(embs)
-        return torch.sigmoid(self.fc(output))
+        return self.fc(output)
 
 
 def train(model: PosTagger,
@@ -113,15 +114,16 @@ def train(model: PosTagger,
         loss = loss_fn(probs.view(-1,19), labels.view(-1))
         loss.backward()
         optimizer.step()
-
         preds = probs.argmax(dim=2)
+        for index, (value1, value2) in enumerate(zip(preds, labels)):
+            for index, (tag1, tag2) in enumerate(zip(value1, value2)):
+                if tag2==18:
+                    continue
+                else:
+                    total = total+1
+                    correct = correct+1 if tag1==tag2 else correct
 
-        ### for exercise 3.2 ###
-
-        pass
-
-        ###
-
+    print(f'{correct}/{total}')
     return correct / total
 
 
